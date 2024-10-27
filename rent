@@ -1,0 +1,72 @@
+import json
+import os
+
+class Tenant:
+    def __init__(self, name, flat_number, property_name):
+        self.name = name
+        self.flat_number = flat_number
+        self.property_name = property_name
+        self.rent_paid = False
+        self.paid_year = None
+        self.paid_months = []
+
+class RentTracker:
+    def __init__(self):
+        self.tenants = []
+
+    def add_tenant(self, name, flat_number, property_name):
+        tenant = Tenant(name, flat_number, property_name)
+        self.tenants.append(tenant)
+        print(f"Added tenant: {name}, Flat Number: {flat_number}, Property: {property_name}")
+
+    def mark_rent_paid(self, flat_number, year, months):
+        for tenant in self.tenants:
+            if tenant.flat_number == flat_number:
+                tenant.rent_paid = True
+                tenant.paid_year = year
+                tenant.paid_months = months
+                print(f"Rent paid for Flat Number: {flat_number} for Year: {year} Months: {months}")
+                return
+        print(f"No tenant found with Flat Number: {flat_number}")
+
+    def display_rent_status(self):
+        print("\nRent Payment Status:")
+        for tenant in self.tenants:
+            status = "Paid" if tenant.rent_paid else "Not Paid"
+            paid_info = f", Year: {tenant.paid_year}, Months: {tenant.paid_months}" if tenant.rent_paid else ""
+            print(f"Flat Number: {tenant.flat_number}, Tenant: {tenant.name}, Property: {tenant.property_name}, Rent: {status}{paid_info}")
+
+    def save_to_file(self, filename="rent_status.json"):
+        directory = os.path.expanduser('~/Documents')  # Change this to any directory you have write access to
+        filepath = os.path.join(directory, filename)
+        data = [{"name": tenant.name, "flat_number": tenant.flat_number, "property_name": tenant.property_name,
+                 "rent_paid": tenant.rent_paid, "paid_year": tenant.paid_year, "paid_months": tenant.paid_months} for tenant in self.tenants]
+        with open(filepath, 'w') as file:
+            json.dump(data, file, indent=4)
+        print(f"Rent status saved to {filepath}")
+
+if __name__ == "__main__":
+    tracker = RentTracker()
+    
+    while True:
+        print("\n1. Add Tenant\n2. Mark Rent as Paid\n3. Display Rent Status\n4. Save to File\n5. Exit")
+        choice = input("Choose an option: ")
+
+        if choice == '1':
+            name = input("Enter tenant's name: ")
+            flat_number = input("Enter flat number: ")
+            property_name = input("Enter property name: ")
+            tracker.add_tenant(name, flat_number, property_name)
+        elif choice == '2':
+            flat_number = input("Enter flat number: ")
+            year = input("Enter year: ")
+            months = input("Enter months (comma separated): ").split(",")
+            tracker.mark_rent_paid(flat_number, year, months)
+        elif choice == '3':
+            tracker.display_rent_status()
+        elif choice == '4':
+            tracker.save_to_file()
+        elif choice == '5':
+            break
+        else:
+            print("Invalid option, please try again.")
