@@ -30,7 +30,7 @@ class RentTracker:
         print(f"No tenant found with Flat Number: {flat_number}")
 
     def display_rent_status(self):
-        print("\nRent Payment Status:")
+        print("\nRent Payments Status:")
         for tenant in self.tenants:
             status = "Paid" if tenant.rent_paid else "Not Paid"
             paid_info = f", Year: {tenant.paid_year}, Months: {tenant.paid_months}" if tenant.rent_paid else ""
